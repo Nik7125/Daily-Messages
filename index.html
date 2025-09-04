@@ -12,10 +12,7 @@
       max-width: 600px;
       margin: auto;
     }
-    h1 { 
-      text-align: center; 
-      font-size: 22px; 
-    }
+    h1 { text-align: center; font-size: 22px; }
     #messageInput {
       width: 100%;
       padding: 12px;
@@ -50,7 +47,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
   <script>
-    // 🔹 Replace this with your Firebase config
+    // 🔹 Your Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyAC4XYNtx2CyYkztVpwhYVH9JMOnDTxiYk",
       authDomain: "daily-messages-c2203.firebaseapp.com",
@@ -72,21 +69,26 @@
     // Render new messages in real-time
     messagesRef.on('child_added', snapshot => {
       const msg = snapshot.val();
+      console.log("New message:", msg);
       const div = document.createElement('div');
       div.className = 'message';
       div.innerHTML = `<div>${msg.text}</div><div class="timestamp">${msg.time}</div>`;
       messagesDiv.prepend(div); // latest on top
     });
 
-    // Add message on Enter
+    // Add new message
     input.addEventListener('keypress', e => {
       if (e.key === 'Enter' && input.value.trim()) {
         const now = new Date();
         const timestamp = now.toLocaleString();
-        messagesRef.push({
-          text: input.value.trim(),
-          time: timestamp
-        });
+        const messageData = { text: input.value.trim(), time: timestamp };
+
+        console.log("Sending message:", messageData);
+
+        messagesRef.push(messageData)
+          .then(() => console.log("✅ Message saved"))
+          .catch(err => console.error("❌ Error saving message:", err));
+
         input.value = '';
       }
     });
